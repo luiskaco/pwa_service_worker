@@ -1,0 +1,27 @@
+// Evento dentro  del server workers - Listener
+
+ install 
+ activate
+ push
+ fetch
+ sync
+ message
+
+// Nota: por lo general de se llama sw.js o service-workers.js
+   Nota: el service worker siempre esta ejecutandose, hasta que sea eliminado o suplantado
+
+// Nota: server workers, debe funcionar en https. 
+
+// Nota: deshabiitar cache en la pestana network para tener las ultimas versiones | evitamos que chrome no mantega copias bieja
+
+// Nota:  el service worker debe ir en el archivo raiz donde inicia la aplicacion
+
+// Nota2 Es importante que el service worker este en la raiz, porque si se especifica en una carpeta solo monitorearia los archivos que esten en esa carpeta
+
+// Video 37 para configuracion del .jshintrc
+
+
+
+// Cache Storage / Documentacion
+
+https://developer.mozilla.org/en-US/docs/Web/API/CacheStorage

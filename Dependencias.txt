@@ -1,0 +1,25 @@
+// Creando servidor 
+
+https://www.npmjs.com/package/http-server
+
+Iniciar servidor dentro de una carpeta 
+
+http-server                 ||  Iniciamos Servidor
+http-server -p 8081         ||  Puerto
+http-server -p 8081 -0      ||  Navegador
+
+
+// API DE PRUEBA 
+
+https://reqres.in/
+
+
+
+// Respuesta del fecth 
+
+https://developer.mozilla.org/en-US/docs/Web/API/Response
+
+
+// crear url object
+
+https://developer.mozilla.org/es/docs/Web/API/URL/createObjectURL

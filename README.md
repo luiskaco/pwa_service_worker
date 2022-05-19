@@ -100,6 +100,25 @@ self.addEventListener('fetch', event => {
 
 ```
 
+##### Introducción al Cache
+
+Verificamos si soporta cache. 
+
+```javascript
+if(window,caches){
+
+}
+```
+
+Creamos la cache
+```javascript
+    const cacheProm = caches.open(CACHE_NAME)
+          .then(cache => console.log)
+```
+
+##### Estrategia del Cache
+
+
 ##### Notas Recordatorias
 
 - Nota: por lo general de se llama sw.js o service-workers.js

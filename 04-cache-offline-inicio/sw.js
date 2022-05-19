@@ -1,41 +1,34 @@
 // const CACHE_NAME = 'cache-1'
 
 // OPTIMIZACION
-
 const CACHE_STATIC_NAME = 'static-v2'
 const CACHE_DYNAMIC_NAME = 'dynamic-v1'
 const CACHE_INMUTABLE_NAME = 'inmutable-v1'
 
+const CACHE_DYNAMIC_LIMIT = 50;
+// Nota: Cambiar un valor del nombre de la cache, ya es un cambio en el service Worker. 
 
-
+// FUNCION PARA LIMPIAR CACHE
 function limpiarCache(cacheName,  numItems) {
 
-    caches.open(cacheName)
-          .then(cache => {
+        caches.open(cacheName)
+            .then(cache => {
 
               return cache.keys()
-                          .then(keys => {
-                            //  console.log(keys)
-
-                                //Si hay mas item de lo que soporta cache
-                                if(keys.length > numItems){
-                                  console.log(keys.length)
-                                    cache.delete(keys[0]).then(limpiarCache(cacheName,  numItems))
-                                }
-
-                          })
-
-
-
+                    .then(keys => {
+                         //  console.log(keys)
+                        //Si hay mas item de lo que soporta cache
+                        if(keys.length > numItems){
+                            console.log(keys.length)
+                            cache.delete(keys[0]).then(limpiarCache(cacheName,  numItems))
+                        }
+                    })
           })
 
 }
 
-
-
 // Nota importante: el app shell es lo que necesita el codigo para funcionar
 // Nota: es importante elimiminar la cache vieja una vez se cambie la version
-
 self.addEventListener('install', e => {
 
     // Creamos la cache
@@ -48,7 +41,8 @@ self.addEventListener('install', e => {
                 '/index.html',
                 '/css/style.css',
                 '/img/main.jpg',
-                '/js/app.js'
+                '/js/app.js',
+                '/img/no-img.jpg'
             ]);
 
           })
@@ -61,70 +55,58 @@ self.addEventListener('install', e => {
           // el install no espera por eso usamos el 
           // e.waitUntil([cacheProm, cachePromInmutable]);
           e.waitUntil( Promise.all([cacheProm, cachePromInmutable]));
-
 });
 
 
 // Nota: recoerdar que las estrategia de cache, siempre se hacen en el fetch
 self.addEventListener('fetch', e => {
 
-   
-    // 1 - Cache Only : es cuando queremos que toda la web sea servida del cache
-
-    // e.respondWith( caches.match( e.request ))
-
-    /* nota: al pasar caches.match dentro del respondWith; estamos relacionando que todas las caches 
-        deben corresponder al mismo dominio de la web
-    */
-
-    // Desventajas:
-    //  Para modificar un ardhivo es necesario actualizar el servide worker
-
-    //  --------------------------------------------------------------------------------------------
-
-    // 2 - Cache with Netowork Fallback: Intenta primero en el cache, si no encuentra busca en internet
+    // 5 - Cache & network race 
+    // Esta es una competacia entre la cache y el internet para ver cual responde mas rapido
 
 
-        // Consultamos
-        const resProm = caches.match(e.request)
-              .then(res => {
+    console.log(e.request)
 
-                // Si existe respuesta
-                if(res) return res;
+    const respuesta = new Promise( (resolve, reject) =>{
 
-                // No existeo | Debo ir a la web
+        let rechazada = false;
+
+        const falloUnaVez = () => {
+
+            if ( rechazada ) {
                 
-                console.log('no existe', e.request.url)
+                if ( /\.(png|jpg)$/i.test( e.request.url ) ) {
 
-                return fetch(e.request).then(newResp => {
+                    resolve( caches.match('/img/no-img.jpg')  );
 
-                    // Si ya lo tengo de itnernet, lo metemos en cache
-                    caches.open(CACHE_DYNAMIC_NAME)
-                           .then(cache => {
+                } else { 
+                    reject('No se encontro respuesta');
+                }
 
-                                //Agregamos el nuevo cache
-                                cache.put(e.request, newResp)
-                                //PRimer agumento: la peticion y lo que va regresar como respuesta
-                                
-                             
 
-                                // Limpiamos cache
-                                limpiarCache(CACHE_DYNAMIC_NAME, 50)  // Un buen numero de elementos en cache es 50
+            } else {
+                rechazada = true;
+            }
 
-                           })
 
-                    return newResp.clone();
-                })
-
-              })
-
-              // NotaL el cache dinamico puede crecer mucho, por eso es importante separar las cache
+        };
 
 
 
-              e.respondWith(resProm)
+        fetch( e.request ).then( res => {
+            res.ok ? resolve(res) : falloUnaVez();
+        }).catch( falloUnaVez );
 
-              
-   
 
+        caches.match( e.request ).then( res => {
+            res ? resolve( res ) : falloUnaVez();
+        }).catch( falloUnaVez );
+
+
+    });
+
+
+
+
+    e.respondWith(respuesta);
 })

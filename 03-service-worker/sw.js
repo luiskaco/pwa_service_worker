@@ -3,6 +3,8 @@
 
 //nota: cuando se tiene el evento de instalacion , es necesario abrir otra pesta;a
 self.addEventListener('install', event => {
+        
+        // PASOS QUE NORMALMENTE SE REALIZAN
 
         // Descargar assets
         // creamos un cache
@@ -14,19 +16,20 @@ self.addEventListener('install', event => {
         // Para hacer que se instale el nuevo service worker
         // self.skipWaiting();
         // Nota: No es siempre recomendable tenerlo activo. Ya que reemplza sin tomar en cuenta si se anda usando.
+        // Se recomienda que se cierre la app y se vuelve a ejecutar
 
 
         const instalacion = new Promise((resolve, reject) => {
 
             setTimeout(() => {
-                console.log('SW: Instalaciones Termiadas')
+                console.log('SW: Instalaciones Terminadas')
                 self.skipWaiting();
                 resolve();
             }, 1)
 
         })
 
-        //Espera que
+        //Espera que (la promesa termine de realizarse)
         event.waitUntil(instalacion);
 
 })
@@ -36,6 +39,8 @@ self.addEventListener('activate', event => {
     
     // borrar cache viejo
     console.log('SW2: Activo y listo para controlar la aplicacion')
+
+    // nota> se avtica una vez el cliente cierre la aplicacion.
 })
 
 
@@ -43,6 +48,7 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
 
     // Aplicar Estrategia del cache: es decir, toma de decisiones de almacenaje de cache
+    
     // console.log('SW:', event.request.url)
 
 

@@ -17,6 +17,13 @@ Es una aplicacion web que progresivamente hace uso de caracteristicas como por e
 - Manifest : Como luce la aplicacion en el home Screen
 - Service Worker : motor de la PWA
 
+#### Entre los listeners más comunes están:
+
+- fetch
+- sync
+- install
+- activate
+- push
 
 #### Ciclo de Vida
 
@@ -118,6 +125,49 @@ Creamos la cache
 
 ##### Estrategia del Cache
 
+- 1) Cache only: es cuando queremos que toda la web sea servida del cache
+- 2) Cache with Netowork Fallback: Intenta primero en el cache, si no encuentra busca en internet
+- 3) Network With Cache WFallback: Consulta en internet, si no busca en la cache
+- 4) Cache with network Update :  Rendimiento es critico \ cuando se requiere que se carge rapido el contenido
+- 5) Cache & network race : Esta es una competacia entre la cache y el internet para ver cual responde mas rapido
+
+
+#### Definir app Shell
+
+- Nota importante: el app shell es lo que necesita el codigo para funcionar
+
+```javascriptself.addEventListener('install', e => {
+
+    // Creamos la cache
+    const cacheProm = caches.open(CACHE_NAME)
+          .then(cache => {
+
+           // APP SHELL es este cuerpo de cache
+           return cache.addAll([
+                '/',   // la raiz debe especificarse porque es parte de ddone parte la cache
+                '/index.html',
+                '/css/style.css',
+                '/img/main.jpg',
+                'https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css',
+                '/js/app.js'
+            ]);
+
+          })
+
+
+          // el install no espera por eso usamos el 
+          e.waitUntil(cacheProm);
+
+});
+```
+
+##### Ejemplos
+
+
+
+
+
+
 
 ##### Notas Recordatorias
 
@@ -147,4 +197,8 @@ https://developer.mozilla.org/en-US/docs/Web/API/CacheStorage
 
 https://caniuse.com/
 
+
+Buena Guia
+
+https://github.com/LeoSan/CursoPWA
 

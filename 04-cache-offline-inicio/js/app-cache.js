@@ -8,8 +8,12 @@ if ( navigator.serviceWorker ) {
 //  nota: si soporta service Worker, entonces soporta cache
 
 
-// Nota: La cache es parte del objeto windows
 
+//Nota> Comprobar la cache en a consola. Pertenete al objeto windows. verificamos escribiendo window.cache
+if(window.caches) {}
+
+
+// Nota: La cache es parte del objeto windows
 //  Verificamso si soporta cache. 
 if(window,caches){
     //  Creamos cache
@@ -18,22 +22,25 @@ if(window,caches){
 
     //  Comprobamos cache
     caches.has('prueba-3').then(console.log)
-    //  nota Devuelve promesa
+    //  Nota: la cache devuelve  promesa
 
     //  Eliminar cache
-    //  caches.delete('prueba-1').then(console.log)
+    caches.delete('prueba-1').then(console.log)
+
 
     caches.open('cache-v1.1').then( cache => {
 
              //  Agregamos en cache individualmente
-             //  cache.add('/index.html')
+                
+                //  cache.add('/index.html')
 
              // Agregamos todo
-            cache.addAll([
-                '/index.html',
-                '/css/style.css',
-                '/img/main.jpg',
-            ]).then(() => {
+      
+                cache.addAll([
+                    '/index.html',
+                    '/css/style.css',
+                    '/img/main.jpg',
+                ]).then(() => {
                 
                 // Eliminar Carche
                 // cache.delete('/css/style.css').then(console.log)

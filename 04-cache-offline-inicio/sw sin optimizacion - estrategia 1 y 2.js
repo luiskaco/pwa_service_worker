@@ -36,7 +36,7 @@ self.addEventListener('fetch', e => {
    
     // 1 - Cache Only : es cuando queremos que toda la web sea servida del cache
 
-    // e.respondWith( caches.match( e.request ))
+            // e.respondWith( caches.match( e.request ))    
 
     /* nota: al pasar caches.match dentro del respondWith; estamos relacionando que todas las caches 
         deben corresponder al mismo dominio de la web

@@ -1,31 +1,36 @@
 // const CACHE_NAME = 'cache-1'
 
-// OPTIMIZACION
+// OPTIMIZACION - NetworkWithCacheFallback
+
 const CACHE_STATIC_NAME = 'static-v2'
 const CACHE_DYNAMIC_NAME = 'dynamic-v1'
 const CACHE_INMUTABLE_NAME = 'inmutable-v1'
 
 const CACHE_DYNAMIC_LIMIT = 50;
+
 // Nota: Cambiar un valor del nombre de la cache, ya es un cambio en el service Worker. 
 
 // FUNCION PARA LIMPIAR CACHE
 function limpiarCache(cacheName,  numItems) {
 
-        caches.open(cacheName)
-            .then(cache => {
+    caches.open(cacheName)
+          .then(cache => {
 
               return cache.keys()
-                    .then(keys => {
-                         //  console.log(keys)
-                        //Si hay mas item de lo que soporta cache
-                        if(keys.length > numItems){
-                            console.log(keys.length)
-                            cache.delete(keys[0]).then(limpiarCache(cacheName,  numItems))
-                        }
-                    })
+                          .then(keys => {
+                            //  console.log(keys)
+
+                                //Si hay mas item de lo que soporta cache
+                                if(keys.length > numItems){
+                                  console.log(keys.length)
+                                    cache.delete(keys[0]).then(limpiarCache(cacheName,  numItems))
+                                }
+                          })
           })
 
 }
+
+
 
 // Nota importante: el app shell es lo que necesita el codigo para funcionar
 // Nota: es importante elimiminar la cache vieja una vez se cambie la version
@@ -41,8 +46,7 @@ self.addEventListener('install', e => {
                 '/index.html',
                 '/css/style.css',
                 '/img/main.jpg',
-                '/js/app.js',
-                '/img/no-img.jpg'
+                '/js/app.js'
             ]);
 
           })
@@ -55,58 +59,46 @@ self.addEventListener('install', e => {
           // el install no espera por eso usamos el 
           // e.waitUntil([cacheProm, cachePromInmutable]);
           e.waitUntil( Promise.all([cacheProm, cachePromInmutable]));
+
 });
 
 
 // Nota: recoerdar que las estrategia de cache, siempre se hacen en el fetch
 self.addEventListener('fetch', e => {
 
-    // 5 - Cache & network race 
-    // Esta es una competacia entre la cache y el internet para ver cual responde mas rapido
+   
+    // 3 - Network with cache fallback | Consulta en internet, si no busca en la cache
 
+      // Buscamos en la internet
+      const respNetwork = fetch(e.request).then(res => {
 
-    console.log(e.request)
+          //Si la respuesta no existe, intentaos leer de la cache
+          if(!res)  return caches.match(e.request)
+          // console.log('fetch', res)
 
-    const respuesta = new Promise( (resolve, reject) =>{
+          // Creamos y abrimos cache
+          caches.open(CACHE_DYNAMIC_NAME)
+                .then(cache => {
+                    // Guardamos lo que buscamos y su respuesta
+                    cache.put(e.request, res);
+                    limpiarCache(CACHE_DYNAMIC_NAME, CACHE_DYNAMIC_LIMIT)  // Un buen numero de elementos en cache es 50
+                })
 
-        let rechazada = false;
+          return res.clone();
 
-        const falloUnaVez = () => {
+      }).catch(err =>{
+          // Buscamos si tenemos algo en la cache
+          return caches.match(e.request) // Si existe algo en la cache con la peticion solicitada, retornamos
+      })
 
-            if ( rechazada ) {
-                
-                if ( /\.(png|jpg)$/i.test( e.request.url ) ) {
-
-                    resolve( caches.match('/img/no-img.jpg')  );
-
-                } else { 
-                    reject('No se encontro respuesta');
-                }
-
-
-            } else {
-                rechazada = true;
-            }
-
-
-        };
-
-
-
-        fetch( e.request ).then( res => {
-            res.ok ? resolve(res) : falloUnaVez();
-        }).catch( falloUnaVez );
-
-
-        caches.match( e.request ).then( res => {
-            res ? resolve( res ) : falloUnaVez();
-        }).catch( falloUnaVez );
-
-
-    });
+      // DEVENTAJA de este metodo
+      // 1 . Cuando esta en un mobil, va buscar siempre va buscar la informacion actualizada.
+      // 2. Siempre va consumir datos.
 
 
 
+    e.respondWith(respNetwork);
 
-    e.respondWith(respuesta);
+
+
 })

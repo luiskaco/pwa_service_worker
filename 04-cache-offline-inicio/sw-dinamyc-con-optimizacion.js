@@ -1,6 +1,6 @@
 // const CACHE_NAME = 'cache-1'
 
-// OPTIMIZACION
+// OPTIMIZACION    dinamyc-con-optimizacion
 
 const CACHE_STATIC_NAME = 'static-v2'
 const CACHE_DYNAMIC_NAME = 'dynamic-v1'
@@ -21,6 +21,7 @@ function limpiarCache(cacheName,  numItems) {
                                 //Si hay mas item de lo que soporta cache
                                 if(keys.length > numItems){
                                   console.log(keys.length)
+                                    // Eliminamos los cache 
                                     cache.delete(keys[0]).then(limpiarCache(cacheName,  numItems))
                                 }
                           })
@@ -56,6 +57,8 @@ self.addEventListener('install', e => {
 
           // el install no espera por eso usamos el 
           // e.waitUntil([cacheProm, cachePromInmutable]);
+
+          // Como son dos promeas la ubicamos en un arreglo de promesas.
           e.waitUntil( Promise.all([cacheProm, cachePromInmutable]));
 
 });

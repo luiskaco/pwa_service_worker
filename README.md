@@ -125,11 +125,11 @@ Creamos la cache
 
 ##### Estrategia del Cache
 
-- 1) Cache only: es cuando queremos que toda la web sea servida del cache
-- 2) Cache with Netowork Fallback: Intenta primero en el cache, si no encuentra busca en internet
-- 3) Network With Cache WFallback: Consulta en internet, si no busca en la cache
-- 4) Cache with network Update :  Rendimiento es critico \ cuando se requiere que se carge rapido el contenido
-- 5) Cache & network race : Esta es una competacia entre la cache y el internet para ver cual responde mas rapido
+ 1) Cache only: es cuando queremos que toda la web sea servida del cache
+ 2) Cache with Netowork Fallback: Intenta primero en el cache, si no encuentra busca en internet
+ 3) Network With Cache WFallback: Consulta en internet, si no busca en la cache
+ 4) Cache with network Update :  Rendimiento es critico \ cuando se requiere que se carge rapido el contenido
+ 5) Cache & network race : Esta es una competacia entre la cache y el internet para ver cual responde mas rapido
 
 
 #### Definir app Shell

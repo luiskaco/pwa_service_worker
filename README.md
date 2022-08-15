@@ -191,6 +191,13 @@ Creamos la cache
 https://developer.mozilla.org/en-US/docs/Web/API/CacheStorage
 
 
+#### Documentacion de cache
+
+https://davidwalsh.name/cache
+
+https://web.dev/cache-api-quick-guide/
+
+
 ### tips
 
 ###### Verificar compatibildiad de alguna funcion en JS 

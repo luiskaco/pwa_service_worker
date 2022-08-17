@@ -169,82 +169,108 @@ Creamos la cache
 e.respondWith( caches.match( e.request ) );
 ```
 
-###### Cache with Netowork Fallback
+###### Cache with Network Fallback
 
 ``` javascripts
-  const respuesta = caches.match( e.request )
-        .then( res => {
+   // Consultamos
+        const resProm = caches.match(e.request)
+              .then(res => {
 
-            if ( res ) return res;
+                // Si existe respuesta
+                if(res) return res;
 
-            // No existe el archivo
-            // tengo que ir a la web
-            console.log('No existe', e.request.url );
+                // No existeo | Debo ir a la web
+                
+                console.log('no existe', e.request.url)
+
+                return fetch(e.request).then(newResp => {
+
+                    // Si ya lo tengo de itnernet, lo metemos en cache
+                    caches.open(CACHE_DYNAMIC_NAME)
+                           .then(cache => {
+
+                                //Agregamos el nuevo cache
+                                cache.put(e.request, newResp)
+                                //PRimer agumento: la peticion y lo que va regresar como respuesta
+                                
+                            
+                                // Limpiamos cache
+                                limpiarCache(CACHE_DYNAMIC_NAME, 5)  // Un buen numero de elementos en cache es 50
+                                // Nota< Se recomienda limpiar la cache donde se guarda
+
+                           })
+
+                    return newResp.clone();
+                })
+
+              })
+
+              // NotaL el cache dinamico puede crecer mucho, por eso es importante separar las cache
 
 
-            return fetch( e.request ).then( newResp => {
 
-                caches.open( CACHE_DYNAMIC_NAME )
-                    .then( cache => {
-                        cache.put( e.request, newResp );
-                        limpiarCache( CACHE_DYNAMIC_NAME, 50 );
-                    });
-
-                return newResp.clone();
-            });
-
-
-        });
-
-
-
-
-    e.respondWith( respuesta );
+    e.respondWith(resProm)
 ```
 
 ###### Network With Cache Fallback
 
 ```
-    const respuesta = fetch( e.request ).then( res => {
+       // Buscamos en la internet
+      const respNetwork = fetch(e.request).then(res => {
 
-        if ( !res ) return caches.match( e.request );
+          //Si la respuesta no existe, intentaos leer de la cache
+          if(!res)  return caches.match(e.request)
+          // console.log('fetch', res)
 
-        caches.open( CACHE_DYNAMIC_NAME )
-            .then( cache => {
-                cache.put( e.request, res );
-                limpiarCache( CACHE_DYNAMIC_NAME, CACHE_DYNAMIC_LIMIT );
-            });
+          // Creamos y abrimos cache
+          caches.open(CACHE_DYNAMIC_NAME)
+                .then(cache => {
+                    // Guardamos lo que buscamos y su respuesta
+                    cache.put(e.request, res);
+                    limpiarCache(CACHE_DYNAMIC_NAME, CACHE_DYNAMIC_LIMIT)  // Un buen numero de elementos en cache es 50
+                })
+
+          return res.clone();
+
+      }).catch(err =>{
+          // Buscamos si tenemos algo en la cache
+          return caches.match(e.request) // Si existe algo en la cache con la peticion solicitada, retornamos
+      })
+
+      // DEVENTAJA de este metodo
+      // 1 . Cuando esta en un mobil, va buscar siempre va buscar la informacion actualizada.
+      // 2. Siempre va consumir datos.
 
 
-        return res.clone();
 
-    }).catch( err =>{
-        return caches.match( e.request );
-    });
-
-
-
-    e.respondWith( respuesta );
+    e.respondWith(respNetwork);
 ```
 ###### Cache with network Update 
 ```
-    Rendimiento es crítico
-    Siempre estarán un paso atrás
-    
-    if ( e.request.url.includes('bootstrap') ) {
-        return e.respondWith( caches.match( e.request ) );
-    }
+     // Rendimiento es critico \ cuando se requiere que se carge rapido el contenido
+    // Siempre estaran un paso atras nuestra actuaLIZACIONES
 
-    const respuesta = caches.open( CACHE_STATIC_NAME ).then( cache => {
 
-        fetch( e.request ).then( newRes => 
-                cache.put( e.request, newRes ));
+        // Resolver problema del cache con bootstrap
+            if(e.request.url.includes('bootstrap')) {
+                return e.respondWith(caches.match(e.request))
+                // Busca la cache del inmutable
+            }
+        //
 
-        return cache.match( e.request );
+        const resp = caches.open(CACHE_STATIC_NAME).then(cache => {
 
-    });
+            // Va a buscar los archivos actualizados en el servidor
+            fetch(e.request).then(newResp => {
+                // Los Guardamos en la cache statica
+                cache.put(e.request, newResp);
+            })  
 
-    e.respondWith( respuesta );
+            // Busca que coincida loq ue tengo en CACHE_STATCI_NAME en la peticon que solicita el cliente
+            return cache.match(e.request)
+        })
+
+    e.respondWith(resp);
 ```
 
 ###### Cache & network race 

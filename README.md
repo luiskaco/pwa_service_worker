@@ -163,11 +163,139 @@ Creamos la cache
 
 ##### Ejemplos
 
+###### Cache only
+
+``` javascripts
+e.respondWith( caches.match( e.request ) );
+```
+
+###### Cache with Netowork Fallback
+
+``` javascripts
+  const respuesta = caches.match( e.request )
+        .then( res => {
+
+            if ( res ) return res;
+
+            // No existe el archivo
+            // tengo que ir a la web
+            console.log('No existe', e.request.url );
+
+
+            return fetch( e.request ).then( newResp => {
+
+                caches.open( CACHE_DYNAMIC_NAME )
+                    .then( cache => {
+                        cache.put( e.request, newResp );
+                        limpiarCache( CACHE_DYNAMIC_NAME, 50 );
+                    });
+
+                return newResp.clone();
+            });
+
+
+        });
 
 
 
 
+    e.respondWith( respuesta );
+```
 
+###### Network With Cache Fallback
+
+```
+    const respuesta = fetch( e.request ).then( res => {
+
+        if ( !res ) return caches.match( e.request );
+
+        caches.open( CACHE_DYNAMIC_NAME )
+            .then( cache => {
+                cache.put( e.request, res );
+                limpiarCache( CACHE_DYNAMIC_NAME, CACHE_DYNAMIC_LIMIT );
+            });
+
+
+        return res.clone();
+
+    }).catch( err =>{
+        return caches.match( e.request );
+    });
+
+
+
+    e.respondWith( respuesta );
+```
+###### Cache with network Update 
+```
+    Rendimiento es crítico
+    Siempre estarán un paso atrás
+    
+    if ( e.request.url.includes('bootstrap') ) {
+        return e.respondWith( caches.match( e.request ) );
+    }
+
+    const respuesta = caches.open( CACHE_STATIC_NAME ).then( cache => {
+
+        fetch( e.request ).then( newRes => 
+                cache.put( e.request, newRes ));
+
+        return cache.match( e.request );
+
+    });
+
+    e.respondWith( respuesta );
+```
+
+###### Cache & network race 
+```
+    const respuesta = new Promise( (resolve, reject) =>{
+
+        let rechazada = false;
+
+        const falloUnaVez = () => {
+
+            if ( rechazada ) {
+                
+                if ( /\.(png|jpg)$/i.test( e.request.url ) ) {
+
+                  
+
+                    resolve( caches.match('/img/no-img.jpg')  );
+
+                } else { 
+                    reject('No se encontro respuesta');
+                }
+
+
+            } else {
+                rechazada = true;
+            }
+
+
+        };
+
+
+
+        fetch( e.request ).then( res => {
+            res.ok ? resolve(res) : falloUnaVez();
+        }).catch( falloUnaVez );
+
+
+        caches.match( e.request ).then( res => {
+            res ? resolve( res ) : falloUnaVez();
+        }).catch( falloUnaVez );
+
+
+    });
+
+
+
+
+    e.respondWith(respuesta);
+})
+
+```
 
 ##### Notas Recordatorias
 

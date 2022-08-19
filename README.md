@@ -502,5 +502,13 @@ self.addEventListener('install', e => {
 
 ##### Diseno Nativo en IOS [Enlaces](https://medium.com/appscope/designing-native-like-progressive-web-apps-for-ios-1b3cdda1d0e8)
 
+#### Generadors para crear manifesto
+Firebase Google : [Enlace](https://app-manifest.firebaseapp.com/)
+Appmanifest: [Enlace](https://tomitm.github.io/appmanifest/)
+
+
+
+
+
 
 

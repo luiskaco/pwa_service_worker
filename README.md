@@ -169,7 +169,7 @@ if(window,caches){
 ```
 
 ##### Leer elementos
-- Nota: Podemos actualizar la cache, para que el cliente tenga la version actualizad
+
 ``` javascript
 
     cache.match('/index.html')
@@ -456,7 +456,10 @@ self.addEventListener('install', e => {
 
 ```
 
+#### Auditar PWA gratuito
 
+
+![](https://github.com/luiskaco/pwa_service_worker/screen-01.png)
 
 
 
@@ -479,27 +482,25 @@ self.addEventListener('install', e => {
 
 #### Cache Storage / Documentacion
 
-https://developer.mozilla.org/en-US/docs/Web/API/CacheStorage
+- Cache Storage [Enlace](https://developer.mozilla.org/en-US/docs/Web/API/CacheStorage)
 
 
 #### Documentacion de cache
 
-https://davidwalsh.name/cache
+- Guia Cache [Enlace](https://davidwalsh.name/cache)
 
-https://web.dev/cache-api-quick-guide/
+- Cache [Enlace](https://web.dev/cache-api-quick-guide/)
 
 
-### tips
+### Tips
 
-###### Verificar compatibildiad de alguna funcion en JS 
+###### Verificar compatibildiad de alguna funcion en JS [Enlace](https://caniuse.com/)
 
-https://caniuse.com/
+##### Como crear el manifesto [Enlace](https://web.dev/add-manifest/)
 
-##### Como crear el manifesto
+##### Buena Guia de [LeoSan](https://github.com/LeoSan/CursoPWA)  [Enlaces](https://github.com/LeoSan/CursoPWA "Enlaces")
 
-https://web.dev/add-manifest/
+##### Diseno Nativo en IOS [Enlaces](https://medium.com/appscope/designing-native-like-progressive-web-apps-for-ios-1b3cdda1d0e8)
 
-##### Buena Guia
 
-https://github.com/LeoSan/CursoPWA
 

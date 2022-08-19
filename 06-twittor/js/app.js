@@ -1,7 +1,20 @@
+//validamos la ruta raiz
+
+var url = window.location.href
+var swLocation = "/pwa_test_twittor/sw.js"
+
+
 //Registrar el service workers
 
 if ( navigator.serviceWorker ) {
-    navigator.serviceWorker.register('/sw.js');
+
+    // si o encuentra sera local
+    if(url.includes('localhost')){
+        swLocation = "/sw.js"
+    }
+
+    // nota :En desarrollo esto esta bien, pero en produccion no
+    navigator.serviceWorker.register(swLocation);
 }
 
 

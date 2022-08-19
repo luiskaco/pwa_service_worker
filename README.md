@@ -459,7 +459,7 @@ self.addEventListener('install', e => {
 #### Auditar PWA gratuito
 
 
-![](https://github.com/luiskaco/pwa_service_worker/screen-01.png)
+![](https://github.com/luiskaco/pwa_service_worker/blob/main/screen-01.png)
 
 
 

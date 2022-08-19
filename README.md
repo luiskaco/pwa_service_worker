@@ -109,6 +109,8 @@ self.addEventListener('fetch', event => {
 
 ##### Introducción al Cache
 
+- Nota: La cache es parte del objeto windows
+
 Verificamos si soporta cache. 
 
 ```javascript
@@ -117,10 +119,75 @@ if(window,caches){
 }
 ```
 
-Creamos la cache
+### Procesos para crear cache
+
+
+#### Creamos la cache
 ```javascript
     const cacheProm = caches.open(CACHE_NAME)
           .then(cache => console.log)
+```
+
+##### Comprobamos 
+
+- nota: la cache devuelve  promesa
+```
+    caches.has('prueba-3').then(console.log)
+    
+```
+
+##### Eliminamos cache
+```
+    caches.delete('prueba-1').then(console.log)
+```
+
+#####  Agregar elementos individuales y multiples
+
+```
+    caches.open('cache-v1.1').then( cache => {
+
+             //  Agregamos en cache individualmente
+                
+                 cache.add('/index.html')
+
+             // Agregamos todo
+      
+                cache.addAll([
+                    '/index.html',
+                    '/css/style.css',
+                    '/img/main.jpg',
+                ]).then(() => {
+            })
+    })
+```
+##### Eliminar elementos
+```
+cache.delete('/css/style.css').then(console.log)
+```
+
+##### Reemplezar elementos 
+```
+ //  Reemplezamos el valor que este dentro del cache / llave valor
+                cache.put('index.html', new Response(`Hola mundo`))
+```
+
+##### Leer elementos
+- Nota: Podemos actualizar la cache, para que el cliente tenga la version actualizad
+```
+
+             cache.match('/index.html')
+                     .then(resp => {
+                 resp.text().then(console.log)
+             })
+              
+
+```
+
+#####   Listar todas las caches
+``` 
+    caches.keys().then(keys => {
+            console.log(keys)
+    })
 ```
 
 ##### Estrategia del Cache
@@ -274,6 +341,8 @@ e.respondWith( caches.match( e.request ) );
 ```
 
 ###### Cache & network race 
+
+
 ```
     const respuesta = new Promise( (resolve, reject) =>{
 
@@ -323,6 +392,75 @@ e.respondWith( caches.match( e.request ) );
 
 ```
 
+
+
+
+
+##### Manifesto
+
+###### Crear archivo manifesto.
+
+- Nota: el nombre no es tan importante. lo requerido es que sea un archivo.json
+
+```
+{
+    "short_name": "Twittors Man",
+    "name": "Twittor man es un app de heroes",
+    "start_url": "index.html",
+    "background_color": "#3498db",
+    "display": "standalone",
+    "orientation": "portrait",
+    "theme_color": "#3498db",
+    "icons": [
+        {
+            "src": "img/icons/icon-72x72.png",
+            "type": "image/png",
+            "sizes": "72x72"
+        },
+        {
+            "src": "img/icons/icon-96x96.png",
+            "type": "image/png",
+            "sizes": "96x96"
+        },
+        {
+            "src": "img/icons/icon-128x128.png",
+            "type": "image/png",
+            "sizes": "128x128"
+        },
+        {
+            "src": "img/icons/icon-144x144.png",
+            "type": "image/png",
+            "sizes": "144x144"
+        },
+        {
+            "src": "img/icons/icon-152x152.png",
+            "type": "image/png",
+            "sizes": "152x152"
+        },
+        {
+            "src": "img/icons/icon-192x192.png",
+            "type": "image/png",
+            "sizes": "192x192"
+        },
+        {
+            "src": "img/icons/icon-384x384.png",
+            "type": "image/png",
+            "sizes": "384x384"
+        },
+        {
+            "src": "img/icons/icon-512x512.png",
+            "type": "image/png",
+            "sizes": "512x512"
+        }
+      ]
+}
+
+```
+
+
+
+
+
 ##### Notas Recordatorias
 
 - Nota: por lo general de se llama sw.js o service-workers.js
@@ -358,8 +496,11 @@ https://web.dev/cache-api-quick-guide/
 
 https://caniuse.com/
 
+##### Como crear el manifesto
 
-Buena Guia
+https://web.dev/add-manifest/
+
+##### Buena Guia
 
 https://github.com/LeoSan/CursoPWA
 

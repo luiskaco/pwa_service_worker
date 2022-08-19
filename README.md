@@ -28,8 +28,8 @@ Es una aplicacion web que progresivamente hace uso de caracteristicas como por e
 #### Ciclo de Vida
 
  - Install:Uso cuando se tiene el evento de instalacion, es necesario abrir otra pesta;a
-```
-      self.addEventListener('install', event => {
+``` javascript
+    self.addEventListener('install', event => {
 
          // Descargar assets
          // creamos un cache
@@ -58,47 +58,44 @@ Es una aplicacion web que progresivamente hace uso de caracteristicas como por e
    })
 ```
  - Activate: Uso Cuando el Service Worker toma el control de la aplicacion
+``` javascript
+    self.addEventListener('activate', event => {
+        
+        // borrar cache viejo
+        console.log('SW2: Activo y listo para controlar la aplicacion')
+    })
 ```
-self.addEventListener('activate', event => {
-    
-    // borrar cache viejo
-    console.log('SW2: Activo y listo para controlar la aplicacion')
-})
-```
-
  - fetch: Uso cuando Maneja de peticiones de https
+ ``` javascript
+    self.addEventListener('fetch', event => {
 
- ```
-self.addEventListener('fetch', event => {
+        // Aplicar Estrategia del cache: es decir, toma de decisiones de almacenaje de cache
+        // console.log('SW:', event.request.url)
+        
+        if(event.request.url.includes('https://reqres.in/')){
+                const resp = new Response(`{ok: false, mensaje: 'jajaja'}`)
+                
+                // Muestra
+                event.respondWith(resp)
+        }
 
-    // Aplicar Estrategia del cache: es decir, toma de decisiones de almacenaje de cache
-    // console.log('SW:', event.request.url)
-    
-    if(event.request.url.includes('https://reqres.in/')){
-             const resp = new Response(`{ok: false, mensaje: 'jajaja'}`)
-             
-            // Muestra
-            event.respondWith(resp)
-    }
-
-})
+    })
 ```
 - Sync: uso cuando recuperamos la conexion a internet
 
+``` javascript
+    self.addEventListener('sync', event => {
+
+
+        console.log('Tenemos conexion!!!')
+        console.log(event)
+        console.log(event.log)
+
+    })
 ```
- self.addEventListener('sync', event => {
-
-
-    console.log('Tenemos conexion!!!')
-    console.log(event)
-    console.log(event.log)
-
-})
-```
-
  - Push: Uso cuando Manejamos las  Notificacion push
- 
-```
+
+``` javascript
    self.addEventListener('push', event => {
 
       console.log('Notifiacion recibidas')
@@ -131,60 +128,60 @@ if(window,caches){
 ##### Comprobamos 
 
 - nota: la cache devuelve  promesa
-```
+``` javascript
     caches.has('prueba-3').then(console.log)
     
 ```
 
 ##### Eliminamos cache
-```
+```  javascript
     caches.delete('prueba-1').then(console.log)
 ```
 
 #####  Agregar elementos individuales y multiples
 
-```
+``` javascript
     caches.open('cache-v1.1').then( cache => {
 
-             //  Agregamos en cache individualmente
-                
-                 cache.add('/index.html')
+            //  Agregamos en cache individualmente
+        
+            cache.add('/index.html')
 
-             // Agregamos todo
-      
-                cache.addAll([
-                    '/index.html',
-                    '/css/style.css',
-                    '/img/main.jpg',
-                ]).then(() => {
-            })
+            // Agregamos todo
+
+            cache.addAll([
+                '/index.html',
+                '/css/style.css',
+                '/img/main.jpg',
+            ]).then(() => {
+         })
     })
 ```
 ##### Eliminar elementos
-```
-cache.delete('/css/style.css').then(console.log)
+``` javascript
+    cache.delete('/css/style.css').then(console.log)
 ```
 
 ##### Reemplezar elementos 
-```
- //  Reemplezamos el valor que este dentro del cache / llave valor
-                cache.put('index.html', new Response(`Hola mundo`))
+- Reemplezamos el valor que este dentro del cache / llave valor
+``` javascript
+    cache.put('index.html', new Response(`Hola mundo`))
 ```
 
 ##### Leer elementos
 - Nota: Podemos actualizar la cache, para que el cliente tenga la version actualizad
-```
+``` javascript
 
-             cache.match('/index.html')
-                     .then(resp => {
-                 resp.text().then(console.log)
-             })
+    cache.match('/index.html')
+            .then(resp => {
+        resp.text().then(console.log)
+    })
               
 
 ```
 
 #####   Listar todas las caches
-``` 
+```  javascript
     caches.keys().then(keys => {
             console.log(keys)
     })
@@ -203,7 +200,9 @@ cache.delete('/css/style.css').then(console.log)
 
 - Nota importante: el app shell es lo que necesita el codigo para funcionar
 
-```javascriptself.addEventListener('install', e => {
+```javascript
+
+self.addEventListener('install', e => {
 
     // Creamos la cache
     const cacheProm = caches.open(CACHE_NAME)
@@ -232,13 +231,13 @@ cache.delete('/css/style.css').then(console.log)
 
 ###### Cache only
 
-``` javascripts
-e.respondWith( caches.match( e.request ) );
+``` javascript
+    e.respondWith( caches.match( e.request ) );
 ```
 
 ###### Cache with Network Fallback
 
-``` javascripts
+``` javascript
    // Consultamos
         const resProm = caches.match(e.request)
               .then(res => {
@@ -281,7 +280,7 @@ e.respondWith( caches.match( e.request ) );
 
 ###### Network With Cache Fallback
 
-```
+``` javascript
        // Buscamos en la internet
       const respNetwork = fetch(e.request).then(res => {
 
@@ -313,7 +312,7 @@ e.respondWith( caches.match( e.request ) );
     e.respondWith(respNetwork);
 ```
 ###### Cache with network Update 
-```
+``` javascript
      // Rendimiento es critico \ cuando se requiere que se carge rapido el contenido
     // Siempre estaran un paso atras nuestra actuaLIZACIONES
 
@@ -343,7 +342,7 @@ e.respondWith( caches.match( e.request ) );
 ###### Cache & network race 
 
 
-```
+``` javascript
     const respuesta = new Promise( (resolve, reject) =>{
 
         let rechazada = false;
@@ -402,7 +401,7 @@ e.respondWith( caches.match( e.request ) );
 
 - Nota: el nombre no es tan importante. lo requerido es que sea un archivo.json
 
-```
+``` javascript
 {
     "short_name": "Twittors Man",
     "name": "Twittor man es un app de heroes",

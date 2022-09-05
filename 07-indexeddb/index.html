@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Reforzamiento sobre indexeddb</title>
+</head>
+<body>
+    <h2>IndexDB</h2>
+    <script src="app.js"></script>
+
+
+    <script>
+        
+
+        //Creamos el espacio de la BD
+
+        let request = window.indexedDB.open('mi-database', 1);
+        // Se verifica si lo soporta el navegador
+        // nota: si la version no se especifica por default es la 1
+        // Nota: se actualizar cuando se crea o se sube la version en la BD
+
+        // Funciona cuando se sube la version de la BD
+        request.onupgradeneeded = event => {
+            console.log("Actualizacion de DB")
+             
+            // Referencia a la BD
+            let db = event.target.result
+           
+            // Creando llave para los registro que guardemos
+            db.createObjectStore('heroes', {
+                // Los parametros que guardaremos
+                keyPath:'id'
+            })
+        }
+
+        // Manejo de error
+        request.onerror = event => {
+            console.log("DB Error", event.target.error)
+        }
+
+        // Insertando en la BD
+        request.onsuccess = event => {
+            //Referencia a la BD 
+            let db = event.target.result
+
+            // Base datos a almacenar
+            let heroesData = [
+                {id: '1111', heroes: 'Spiderman', mensaje:'Aqui su amigo Spiderman'},
+                {id: '2222', heroes: 'Ironman', mensaje:'Aqui su amigo Mark 50'}
+            ];
+
+
+            let heroesTrasaction = db.transaction('heroes','readwrite')
+            //nota: transacion recibe dos parametros: donde se almacenara y el permiso (readwridte, readonly)
+
+            heroesTrasaction.onerror = event => {
+                console.log('Error guardando', event.target.error)
+            }
+
+            // Si fue exitosa la transacion
+            heroesTrasaction.oncomplete = event => {
+                console.log('Transaction hecha', event)
+            }
+
+            let heroesStore = heroesTrasaction.objectStore('heroes')
+
+            for (let heroe of heroesData) {
+                heroesStore.add(heroe)
+            }
+
+            //S esta completo
+            heroesStore.onsuccess = event => {
+                console.log('Nuevo item agregado a la base de datos')
+            }
+
+        }
+
+
+    </script>
+
+
+    <a href="https://developer.mozilla.org/es/docs/Web/API/IndexedDB_API"> Documentacion de IndexDB</a>
+    
+</body>
+</html>

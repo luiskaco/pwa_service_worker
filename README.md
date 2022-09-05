@@ -507,6 +507,13 @@ Firebase Google : [Enlace](https://app-manifest.firebaseapp.com/)
 Appmanifest: [Enlace](https://tomitm.github.io/appmanifest/)
 
 
+#### Documentacion Index DB 
+indexDB: [Enlace](https://developer.mozilla.org/es/docs/Web/API/IndexedDB_API)
+
+Libreria para indexdb pouchdb:[Enlacee](https://pouchdb.com/getting-started.html)
+ 
+
+
 
 
 

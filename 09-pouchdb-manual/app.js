@@ -20,7 +20,7 @@ let mensaje = {
    .catch(console.log)
 
 
-// 3- Leer todos los mensajes offline
+// 3- Leer todos los mensajes offlineW
 // Que aparezcan en la consola
 
 

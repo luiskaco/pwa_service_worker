@@ -1,47 +1,44 @@
 // Routes.js - Módulo de rutas
-var express = require('express');
-var router = express.Router();
-
+const express = require('express');
+const router = express.Router();
 
 const mensajes = [
-    {
-        _id:'xxx',
-        user:'spiderman',
-        mensaje: 'Hola mundo, como estamos'
-    },
-    {
-      _id:'xxy',
-      user:'hulk',
-      mensaje: 'Hola mundo, como estamos'
-   },
 
-]
+  {
+    _id:'963',
+    user:'spiderman',
+    mensaje:'hola mundo'
+  }
+
+
+];
+
+
+
+
 
 // Get mensajes
 router.get('/', function (req, res) {
-  // res.json('Obteniendo mensajes');
-    res.json(mensajes)
+  //res.json('Obteniendo mensajes');
+  res.json(mensajes);
 });
 
 
-//Post Mensaje
+// post de un  mensajes
 router.post('/', function (req, res) {
-  // res.json('Obteniendo mensajes');
-
-    const mensaje = {
-          mensaje: req.body.mensaje,
-          user: req.body.user
+  
+  const mensaje = [
+    {
+      _id:'963',
+      user:req.body.user,
+      mensaje:req.body.mensaje
     }
-
-    mensajes.push(mensaje)
-
-    console.log(mensaje)
-
-    res.json({
-        ok:true, 
-        mensaje
-    })
+  ];
+  mensajes.push(mensaje);
+  res.json({ok:true, mensaje});
 });
+
+
 
 
 module.exports = router;

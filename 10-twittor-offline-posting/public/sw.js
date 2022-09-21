@@ -1,14 +1,14 @@
-// Import pouchDB
-importScripts('https://cdn.jsdelivr.net/npm/pouchdb@7.3.0/dist/pouchdb.min.js')
-
 // imports
+//Esto permite usar PunchDB y usar base datos indexed del navegador
+importScripts('https://cdn.jsdelivr.net/npm/pouchdb@7.3.0/dist/pouchdb.min.js'); 
 importScripts('js/sw-db.js');
 importScripts('js/sw-utils.js');
 
 
-const STATIC_CACHE    = 'static-v4';
-const DYNAMIC_CACHE   = 'dynamic-v2';
-const INMUTABLE_CACHE = 'inmutable-v2';
+
+const STATIC_CACHE    = 'static-v1';
+const DYNAMIC_CACHE   = 'dynamic-v1';
+const INMUTABLE_CACHE = 'inmutable-v1';
 
 
 const APP_SHELL = [
@@ -22,16 +22,17 @@ const APP_SHELL = [
     'img/avatars/thor.jpg',
     'img/avatars/wolverine.jpg',
     'js/app.js',
-    'js/sw-utils.js'
+    'js/sw-utils.js',
+    'js/libs/plugins/mdtoast.min.js',
+    'js/libs/plugins/mdtoast.min.css',
 ];
 
 const APP_SHELL_INMUTABLE = [
     'https://fonts.googleapis.com/css?family=Quicksand:300,400',
     'https://fonts.googleapis.com/css?family=Lato:400,300',
-    'https://use.fontawesome.com/releases/v5.3.1/css/all.css',
+    //'https://use.fontawesome.com/releases/v5.3.1/css/all.css',
     'https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.css',
-    'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js',
-    'https://cdn.jsdelivr.net/npm/pouchdb@7.3.0/dist/pouchdb.min.js' 
+    'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js'
 ];
 
 
@@ -77,101 +78,49 @@ self.addEventListener('activate', e => {
 
 
 
-
+//Esto es para meter funciones a API es decir para validar los APIS 
 self.addEventListener( 'fetch', e => {
 
-        let respuesta
+    //Aqui el nombre del hosting donde llamamos nuestras API 
+    let respuesta;
+    if(  e.request.url.includes('/api') ){
+        //Implementamos cuando usemos API refres 
+        respuesta = manejoApiMensajes(DYNAMIC_CACHE, e.request);
 
-        if(e.request.url.includes('/api'))
-        {
-            // Si incluye la palabra api
+    }else{
 
-            // Buscar inmediato respuesta
-            return manejoApiMensajes(DYNAMIC_CACHE, e.request)
+         respuesta = caches.match( e.request ).then( res => {
 
-        }else{
-               
-                    //Estrategia Network fall Update / estrategia numero 4
-                     respuesta = caches.match( e.request ).then( res => {
-
-                        if ( res ) {
-                            
-                            actualizaCacheStatico( STATIC_CACHE, e.request, APP_SHELL_INMUTABLE );
-                            return res;
-                        } else {
-
-                            return fetch( e.request ).then( newRes => {
-
-                                return actualizaCacheDinamico( DYNAMIC_CACHE, e.request, newRes );
-
-                            });
-
-                        }
-
-                    });
-            
-        }
-
+            if ( res ) {
+                
+                actualizaCacheStatico( STATIC_CACHE, e.request, APP_SHELL_INMUTABLE );
+                return res;
+            } else {
+    
+                return fetch( e.request ).then( newRes => {
+    
+                    return actualizaCacheDinamico( DYNAMIC_CACHE, e.request, newRes );
+    
+                });
+    
+            }
+    
+        });
+    }
 
     e.respondWith( respuesta );
 
 });
 
-
-self.addEventListener('sync', e => {
-
-    console.log("sw: sync")
-
-   
-
-
-})
-
-
-
-// Manejo de Api
-//Network with Cache Fallback / update
-function manejoApiMensajes( cacheName, req ) {
-
-  // nota : el cache no maneja post, por eso debe manejarse de otra forma
-    if ( req.clone().method === 'POST' ) {
-        // POSTEO de un nuevo mensaje
-
-              // Validamos si el navegador soporta el sync manager / Verificar can i use syncmanager
-        if ( self.registration.sync ) {
-            return req.clone().text().then( body =>{
-    
-                // console.log(body);
-                        //convertimos el string en objeto
-                const bodyObj = JSON.parse( body );
-                return guardarMensaje( bodyObj );
-    
-            });
-        } else {
-                // Tengo que guardar en INDEX db
-            return fetch( req );
-        }
-
-
-    } else {
-
-           // Para buscar inmediato las actualizacones de los post
-        return fetch( req ).then( res => {
-       //Si la respuesta es exitosa  o no 
-            if ( res.ok ) {
-              
-                actualizaCacheDinamico( cacheName, req, res.clone() );
-                return res.clone();
-            } else {
-                return caches.match( req );
-            }
-      
-        }).catch( err => {
-               // De no poseer internet
-            return caches.match( req );
-        });
-
+//Tareas Asincronas ->  aquellas que son offline 
+self.addEventListener('sync', e=>{
+    console.log('SW:Sync');
+    if (e.tag === 'nuevo-post'){
+        //Postear en la DB 
+        const respuesta = postearMensajes();
+        //Esto lo envia al SW 
+        e.waitUntil(respuesta);
     }
 
+});
 
-}

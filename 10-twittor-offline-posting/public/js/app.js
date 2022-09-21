@@ -1,22 +1,15 @@
-
 var url = window.location.href;
 var swLocation = '/twittor/sw.js';
 
-
+//Valida si esta en Local o en Producción
 if ( navigator.serviceWorker ) {
-
-
     if ( url.includes('localhost') ) {
-        swLocation = '/sw.js';
+        swLocation = './sw.js';
     }
-
-
     navigator.serviceWorker.register( swLocation );
 }
 
-
 // Referencias de jQuery
-
 var titulo      = $('#titulo');
 var nuevoBtn    = $('#nuevo-btn');
 var salirBtn    = $('#salir-btn');
@@ -34,27 +27,25 @@ var txtMensaje  = $('#txtMensaje');
 var usuario;
 
 
-
-
-// ===== Codigo de la aplicaciÃ³n
+// ===== Codigo de la aplicación
 
 function crearMensajeHTML(mensaje, personaje) {
 
     var content =`
-        <li class="animated fadeIn fast">
-            <div class="avatar">
-                <img src="img/avatars/${ personaje }.jpg">
+    <li class="animated fadeIn fast">
+        <div class="avatar">
+            <img src="img/avatars/${ personaje }.jpg">
+        </div>
+        <div class="bubble-container">
+            <div class="bubble">
+                <h3>@${ personaje }</h3>
+                <br/>
+                ${ mensaje }
             </div>
-            <div class="bubble-container">
-                <div class="bubble">
-                    <h3>@${ personaje }</h3>
-                    <br/>
-                    ${ mensaje }
-                </div>
-                
-                <div class="arrow"></div>
-            </div>
-        </li>
+            
+            <div class="arrow"></div>
+        </div>
+    </li>
     `;
 
     timeline.prepend(content);
@@ -137,47 +128,83 @@ postBtn.on('click', function() {
         return;
     }
 
+var data ={
+    user:'ironman',
+    mensaje:'Prueba tu post'
+}
 
-    const data ={
-        mensaje: mensaje, 
-        user: usuario
-    }
+    
 
-    //Enviando al api
-    fetch('api', {
-        method: 'POST',
-        headers:{'Content-Type' : 'application/json'},
-        body: JSON.stringify(data)
-        }
-    )
-    .then(res => res.json())
-    .then(res => console.log('app.js', res))
-    .catch(err => console.log('app.js error', err));
+try {
+       //Para ser una petición POST 
+       fetch('/api', {
+        method:'POST',
+        headers:{
+            'Content-Type':'application/json',
+        },
+        body:JSON.stringify(data)  
+    }).then(res=>{
+        console.log(res);
+    }).then(resp=>{
+        console.log(resp);
+    }).catch(err=>console.log('app.js error', err));
 
     crearMensajeHTML( mensaje, usuario );
+} catch (error) {
+    console.log(error);
+}
+
+
 
 });
 
 
-getMensajes()
-// Consumir mensaje del servidor
+// Nuevas Funciones, 
 
- function getMensajes(){
+//Obtener mensajes del API 
+function getMensajes(){
+    console.log("entro");
+    fetch('http://localhost:3000/api')
+        .then(res=> res.json())
+        .then(posts =>{
+            console.log(posts);
+            posts.forEach(element => {
+                crearMensajeHTML(element.mensaje, element.user);    
+            });
+            
 
-        const path = `api`
+        }).catch(console.log);
+};
 
-       fetch(path).then(res => {
-            return res.json()
-        }).then(posts => {
-             console.log(posts)
+getMensajes();
 
-             posts.forEach(post => {
-                crearMensajeHTML( post.mensaje, post.user );
-             });
-           
-        } )
-
-  
-
-
+//Metodo: Detectando conexion 
+function isOnline(){
+    if (navigator.onLine){
+        console.log(`Estamos online`);
+         $.mdtoast('OnLine.', 
+         { 
+            type: 'success',
+            interaction:true, 
+            interactionTimeout:1000, 
+           actionText: 'ok!' 
+        }); 
+    }else{
+        console.log(`Estamos offline`);
+        $.mdtoast('OnLine.', 
+        { 
+           type: 'info',
+           interaction:true, 
+           interactionTimeout:1000, 
+          actionText: 'ok!' 
+       }); 
+    }
 }
+
+//Eventos 
+
+isOnline();
+
+window.addEventListener('online', isOnline);
+
+window.addEventListener('offline', isOnline);

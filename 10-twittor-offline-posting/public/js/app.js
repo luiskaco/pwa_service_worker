@@ -203,7 +203,10 @@ function isOnline(){
 
 //Eventos 
 
+// Podemos llmarlopor seguridad
 isOnline();
+
+// Para detectarlo
 
 window.addEventListener('online', isOnline);
 

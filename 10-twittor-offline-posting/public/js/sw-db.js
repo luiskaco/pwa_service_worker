@@ -43,6 +43,7 @@ function postearMensajes(){
                                         //Lo elimino ya que si no cada ves que hagas un posteo te meterá el valor viejo una y otra vez 
                                        return db.remove(doc);
                                     }).catch(err=>console.log('app.js error', err));
+                                    
                                     //Lo almacen en el arreglo
                                     posteos.push(fetchPromesa); 
             }catch(error){

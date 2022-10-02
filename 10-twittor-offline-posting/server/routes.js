@@ -14,9 +14,6 @@ const mensajes = [
 ];
 
 
-
-
-
 // Get mensajes
 router.get('/', function (req, res) {
   //res.json('Obteniendo mensajes');

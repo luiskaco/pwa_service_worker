@@ -46,11 +46,11 @@ function actualizaCacheStatico( staticCache, req, APP_SHELL_INMUTABLE ) {
 // Nota-> cada vez que retornas algo debes manejar la caches para el offline 
 function manejoApiMensajes(cacheName, req){
     
-    //Estrategia especial para post 
+    //Estrategia especial para post ya que la cache no almacena post, si no get
     if(req.clone().method === 'POST'){
         
         //syncmanager -> No es soportado por todos los navegadores web 
-        if (self.registration.sync){
+        if (self.registration.sync){  // Validamos si es soportado
 
             //Posteo de un nuevo mensaje , podemos leer y obtener al objeto 
           return  req.clone().text().then(body=>{//Parte de la paranohia que tiene el sensei, recomienda clonar request 

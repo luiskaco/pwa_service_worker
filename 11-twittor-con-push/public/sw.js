@@ -139,12 +139,28 @@ self.addEventListener('sync', e => {
 
 self.addEventListener('push', e => {
 
-    console.log(e);
-    console.log(e.data.text());
+    // console.log(e);
+    // console.log(e.data.text());
+
+    const data = JSON.parse(e.data.text())
+    console.log(data['titulo'])
 
     // Cuerpoo de la notifiacion
-    const title = e.data.text();
-    const options = {};
+    // const title = e.data.text();
+    const title = data.titulo;
+    const options = {
+        body:data.cuerpo,
+        icon:`img/avatars/${data.usuario}.jpg`,
+        badge: 'img/favicon.ico',
+        image:'https://i0.wp.com/codigoespagueti.com/wp-content/uploads/2021/12/Marvel-Quien-pudo-haber-comprado-la-Torre-de-los-Vengadores-compressed.jpg?resize=1280%2C720&quality=80&ssl=1',
+        vibrate:[50,100,50,100,50,100,400,100,300,100,350,50,200,100,100,50,600],
+        openUrl:'www.google.com'
+    };
+
+    
+        // 
+        // // icon:'img/icons/icon-72x72.png'
+        // icon:`img/avatars/${data.usuario}.jpg`
 
     // espramos y enviamos la notificaicon
     e.waitUntil(self.registration.showNotification(title, options));

@@ -54,6 +54,14 @@ Nota: usado para recrear codigo del objeto windows en node
 nota: usado para enviar notificaciones
 
 
+#### PATRONES DE NOTIFICACION
+
+[Enlace](https://web.dev/push-notifications-display-a-notification/)
+
+##### Patrones de vibration navigator
+
+[Enlace](https://gearside.com/custom-vibration-patterns-mobile-devices/)
+
 # Notas:
 
 Este es un pequeño servidor de express listo para ejecutarse y servir la carpeta public en la web.

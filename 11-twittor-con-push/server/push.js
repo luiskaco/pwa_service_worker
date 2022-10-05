@@ -39,14 +39,11 @@ module.exports.addSubscription = (suscripcion) => {
 // Envio de notificacion
 module.exports.sendPush = ( post ) => {
 
-
     // Recorrer todas las subrcripciones
     suscripciones.forEach( (suscripcion, i) => {
         
-       
         // enviar notificacion a la subcricripcion
-
-         webpush.sendNotification(suscripcion, 'Hola mundo').then().catch(console.log);
+         webpush.sendNotification(suscripcion, JSON.stringify(post)).then().catch(console.log);
 
 
 

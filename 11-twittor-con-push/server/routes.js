@@ -77,18 +77,17 @@ router.get('/key',(req, res) => {
 
 router.post("/push", (req, res) => {
 
-  const notificacion = {
+  const post = {
       titulo: req.body.titulo,
       cuerpo: req.body.cuerpo,
-      usuario:req.body.usuario
-
+      usuario: req.body.usuario
   } 
 
   // Enviar notificacion
-  push.sendPush(notificacion)
+  push.sendPush(post)
 
 
-  res.json(notificacion)
+  res.json(post)
 
 })
 

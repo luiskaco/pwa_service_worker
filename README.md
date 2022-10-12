@@ -511,8 +511,30 @@ Appmanifest: [Enlace](https://tomitm.github.io/appmanifest/)
 indexDB: [Enlace](https://developer.mozilla.org/es/docs/Web/API/IndexedDB_API)
 
 Libreria para indexdb pouchdb:[Enlacee](https://pouchdb.com/getting-started.html)
+
+
+#### Buena practica parra google map para saber la locacion
+
+[Enlace](https://web.dev/native-hardware-user-location/)
  
 
+#### 12 Twiitor
+
+Buena practica parra google map
+
+[Enlace](https://web.dev/native-hardware-user-location/)
+
+
+#### Media Device
+
+MediaDevicesGetUserMedia
+
+[Enlace](https://developer.mozilla.org/es/docs/Web/API/MediaDevices/getUserMedia)
+
+
+# Twittor
+
+Un cascarón de un Twitter de héroes!
 
 
 

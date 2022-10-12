@@ -154,9 +154,35 @@ self.addEventListener('push', e => {
         badge: 'img/favicon.ico',
         image:'https://i0.wp.com/codigoespagueti.com/wp-content/uploads/2021/12/Marvel-Quien-pudo-haber-comprado-la-Torre-de-los-Vengadores-compressed.jpg?resize=1280%2C720&quality=80&ssl=1',
         vibrate:[50,100,50,100,50,100,400,100,300,100,350,50,200,100,100,50,600],
-        openUrl:'www.google.com'
+        openUrl:'/',
+        data:{
+            // url:'https://www.google.com',
+            url:'/',
+            id:data.usuario,
+            icon:'img/avatar/'
+        },
+        actions:[
+            {
+                action:'thor-action',
+                title:'thor',
+                icon:''
+            },
+            {
+                action:'iroman-action',
+                title:'Iroman',
+                icon:''
+            },
+         ]
     };
 
+    // Nota: solo recomienda que como maximo se usen solo 3 acciones
+
+
+    /* Notificacion
+        https://web.dev/push-notifications-display-a-notification/
+        https://gearside.com/custom-vibration-patterns-mobile-devices/
+    
+    */
     
         // 
         // // icon:'img/icons/icon-72x72.png'
@@ -166,3 +192,58 @@ self.addEventListener('push', e => {
     e.waitUntil(self.registration.showNotification(title, options));
 
 });
+
+
+/// DOS EVENTOS ASOCIADO A LAS NOTIFICACIONEs
+
+
+    // Cuando cerramo las notificaciones\
+    self.addEventListener('notificationclose', e => {
+        console.log('Notificacion cerrado', e)
+    })
+
+    // cuando se hace clic en una notificacion
+    self.addEventListener('notificationclick', e =>{ // La notifiacion a estamos esta viniedo en E
+
+        // Obtenemos una referencia mas comoda de la notificacion.
+        const notificacion = e.notification;
+        const action = e.action;
+
+        console.log({ notificacion , action})
+
+        // Verificamos si ya hay una ventana abierta para enviar la misma consulta a la misma ventana.
+       const respuesta =  clients.matchAll()
+             .then( clientes => {
+                // Si encontramos un tab abierto, redireccionamos a esa vista
+                let cliente = clientes.find(c => {
+                    return c.visibilityState === 'visible'
+                } )
+
+                if (cliente !== undefined) {
+                    // Redirecionamos a esa ventana
+                    cliente.navigate(notificacion.data.url)
+                    // Para que la ventana quede en focus
+                    cliente.focus();
+                    
+                }else{
+                    /// Hacemos regerencia a todos los objetos abierto. Entiendase pestana
+                    clients.openWindow( notificacion.data.url )
+                }
+                /// Para cerrar la notificacion. Al momento de ser llamada
+                return notificacion.close()
+             })
+
+        // /// Hacemos regerencia a todos los objetos abierto. Entiendase pestana
+        // clients.openWindow( notificacion.data.url )
+
+        // /// Para cerrar la notificacion. Al momento de ser llamada
+        // notificacion.close()
+
+        //Esperamos hasta que se resuelva todo
+        e.waitUntil(respuesta)
+
+    })
+
+
+
+    // Nota: recordario, en el service worker no existe el objet windows.
